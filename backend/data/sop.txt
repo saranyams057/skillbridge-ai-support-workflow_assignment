@@ -1,0 +1,102 @@
+Business: SkillBridge Academy
+
+Business Description:
+SkillBridge Academy is an online learning academy for students, fresh graduates, and early-career professionals who want practical job-ready technology skills.
+
+Supported Courses:
+1. Python Programming
+2. Data Analytics
+3. Generative AI Basics
+4. Full-Stack Web Development
+5. Interview Preparation Bootcamp
+
+Course Details:
+Python Programming:
+- Fee: ₹4,999
+- Duration: 6 weeks
+- Level: Beginner-friendly
+- Includes: Python basics, functions, OOP, file handling, APIs, mini projects
+
+Data Analytics:
+- Fee: ₹6,999
+- Duration: 8 weeks
+- Level: Beginner to intermediate
+- Includes: Excel, SQL basics, Python for analysis, Pandas, visualization, dashboard basics
+
+Generative AI Basics:
+- Fee: ₹7,999
+- Duration: 4 weeks
+- Level: Beginner-friendly for learners with basic Python knowledge
+- Includes: LLM basics, prompting, RAG introduction, LangChain basics, simple AI app project
+
+Full-Stack Web Development:
+- Fee: ₹8,999
+- Duration: 10 weeks
+- Level: Beginner to intermediate
+- Includes: HTML, CSS, JavaScript, React, FastAPI basics, database integration, deployment basics
+
+Interview Preparation Bootcamp:
+- Fee: ₹2,999
+- Duration: 2 weeks
+- Level: Suitable for freshers and early-career candidates
+- Includes: resume review, mock interview, project explanation practice, HR questions, technical Q&A practice
+
+Batch Timings:
+- Weekday evening batch: Monday to Friday, 7:00 PM to 9:00 PM
+- Weekend morning batch: Saturday and Sunday, 10:00 AM to 1:00 PM
+- New batches usually start every Monday for short courses and every first Saturday for weekend batches
+
+Mode of Learning:
+- All courses are online and instructor-led
+- Live sessions are conducted through video meeting links
+- Session recordings are available for enrolled learners for 30 days
+
+Certificate:
+- Certificate of completion is provided after attending at least 70% of sessions and submitting required assignments
+
+Enrollment:
+- Students can enroll through the SkillBridge website or WhatsApp admissions team
+- Payment must be completed before batch confirmation
+- The admissions team usually confirms enrollment within 24 working hours after payment
+
+Placement and Career Support:
+- SkillBridge provides resume review, mock interviews, project explanation guidance, and job application guidance
+- SkillBridge does not guarantee jobs, interviews, salary packages, or placement outcomes
+
+Refund and Cancellation:
+- Refund requests must be reviewed by the admissions team
+- The AI assistant must not approve, reject, or promise refunds
+- Batch change requests are handled by the admissions team based on seat availability
+
+Payment:
+- Accepted payment methods: UPI, debit card, credit card, and net banking
+- EMI options are not mentioned in the SOP
+- Scholarships or discounts are not mentioned in the SOP
+
+Escalation Rules:
+Escalate to a human admissions counselor if:
+- The learner asks for a refund, cancellation, scholarship, discount, EMI, or payment exception
+- The learner reports payment failure or duplicate payment
+- The learner complains about trainer quality, certificate delay, access issues, or missed recordings
+- The learner is angry, frustrated, or dissatisfied
+- The learner asks for guaranteed placement, guaranteed interview calls, or salary promises
+- The learner asks for a custom corporate training plan
+- The learner asks something not covered in this SOP
+- The AI cannot answer more than two questions from the SOP
+- The learner explicitly asks to speak to a counselor, human, manager, or trainer
+
+Lead Qualification Questions:
+To qualify a course enquiry, collect:
+1. Interested course
+2. Learning goal
+3. Current skill level: beginner, intermediate, or advanced
+4. Learner type: student, fresher, working professional, career switcher, or business owner
+5. Preferred batch: weekday evening or weekend morning
+6. Timeline to start: immediately, this month, or later
+7. Phone or email for admissions follow-up, if the learner voluntarily provides it
+
+Recommended Next Actions:
+- If the learner is interested in a listed course and asks normal course questions, answer from the SOP and continue qualification
+- If the learner is unsure which course to choose, ask about their learning goal and current skill level
+- If the learner wants enrollment, collect qualification details and recommend contacting the WhatsApp admissions team or website enrollment
+- If the learner asks for refund, discount, EMI, job guarantee, complaint handling, or unsupported details, escalate to a human admissions counselor
