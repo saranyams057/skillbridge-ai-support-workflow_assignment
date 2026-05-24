@@ -2,6 +2,9 @@
 
 A  full-stack AI customer support system demonstrating a **controlled, stage-based workflow** for course enquiries, lead qualification, escalation detection, and conversation summaries.
 
+##Demo Video 
+- [Demo Video Walkthrough](https://drive.google.com/file/d/13xo0xf_yRGadjSyyAjdhLy5AqMSSNGFb/view?usp=sharing)
+
 ## 🎯 Project Overview
 
 **SkillBridge Academy** is a fictional online learning academy. This project implements an AI assistant that:
