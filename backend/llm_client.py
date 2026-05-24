@@ -1,25 +1,29 @@
 import json
 from typing import Any, Dict
 
-from groq import Groq
+from openai import OpenAI
 
-from config import GROQ_API_KEY, GROQ_MODEL
+from config import OPENAI_API_KEY, OPENAI_MODEL
 from prompts import SYSTEM_PROMPT
 from schemas import ConversationState
 from utils import estimate_tokens
 
-client = Groq(api_key=GROQ_API_KEY)
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 
-def call_llm_json(prompt: str, state: ConversationState) -> Dict[str, Any]:
+def call_llm_json(
+    prompt: str,
+    state: ConversationState,
+    system_prompt: str = SYSTEM_PROMPT,
+) -> Dict[str, Any]:
     try:
         state.usage.model_calls += 1
-        state.usage.estimated_input_tokens += estimate_tokens(SYSTEM_PROMPT + prompt)
+        state.usage.estimated_input_tokens += estimate_tokens(system_prompt + prompt)
 
         response = client.chat.completions.create(
-            model=GROQ_MODEL,
+            model=OPENAI_MODEL,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.1,

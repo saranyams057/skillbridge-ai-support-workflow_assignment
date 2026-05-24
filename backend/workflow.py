@@ -8,8 +8,20 @@ from utils import log_conversation, log_escalation
 
 
 def run_workflow(message: str, state: ConversationState, sop: str):
-    state.messages.append(ChatMessage(role="user", content=message))
+    """
+        Main workflow controller: orchestrates all stages.
 
+        Flow:
+        1. Append user message
+        2. Check if summary requested
+        3. Run escalation detection
+        4. If not escalated: Run FAQ
+        5. Run qualification
+        6. Generate response
+        """
+    # Step 1: Append user message to state
+    state.messages.append(ChatMessage(role="user", content=message))
+    #Step 2: Check if user requested summary/end
     normalized = message.lower().strip()
     if normalized in ["summary", "end", "end session", "finish", "generate summary"]:
         return _summary_response(state, sop)

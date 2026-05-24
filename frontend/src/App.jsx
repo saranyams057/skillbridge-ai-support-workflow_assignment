@@ -41,7 +41,7 @@ export default function App() {
       setStage(data.stage);
     } catch (error) {
       console.error(error);
-      alert("Request failed. Check backend server and GROQ_API_KEY.");
+      alert("Request failed. Check backend server and OPENAI_API_KEY.");
     } finally {
       setLoading(false);
     }

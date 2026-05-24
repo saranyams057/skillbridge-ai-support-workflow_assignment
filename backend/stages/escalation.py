@@ -1,126 +1,144 @@
-from typing import Any, Dict
+import re
+from typing import Optional
 
 from llm_client import call_llm_json
 from prompts import ESCALATION_ASSESSMENT_PROMPT
-from schemas import ConversationState
 from utils import stringify_conversation
 
-
-COMPLAINT_PATTERNS = [
-    "angry", "frustrated", "upset", "disappointed", "complaint",
-    "bad experience", "not happy", "poor support", "trainer was bad",
-    "certificate not received", "recording not available", "access issue"
-]
-
-HUMAN_REQUEST_PATTERNS = [
-    "human", "counselor", "counsellor", "manager", "trainer",
-    "admissions team", "talk to someone", "speak to someone", "call me"
-]
-
-PRICING_EXCEPTION_PATTERNS = [
-    "discount", "scholarship", "emi", "installment", "instalment",
-    "lower price", "reduce fee", "fee waiver", "coupon"
-]
-
-REFUND_PAYMENT_PATTERNS = [
-    "refund", "cancel my enrollment", "cancellation", "payment failed",
-    "duplicate payment", "paid twice", "money deducted", "receipt not received"
-]
-
-PLACEMENT_GUARANTEE_PATTERNS = [
-    "guaranteed job", "job guarantee", "guaranteed placement",
-    "sure placement", "salary guarantee", "guaranteed interview",
-    "100% placement", "assured job"
-]
-
-CORPORATE_PATTERNS = [
-    "corporate training", "train my team", "company training",
-    "bulk training", "custom training for employees"
-]
-
-
-def layer1_fast_pattern_match(message: str) -> Dict[str, Any]:
-    text = message.lower()
-
-    if any(p in text for p in REFUND_PAYMENT_PATTERNS):
-        return {
-            "matched": True,
-            "should_escalate": True,
-            "reason": "Refund, cancellation, or payment issue requires admissions team review.",
-            "category": "refund_or_cancellation",
-            "confidence": 0.97,
-            "customer_sentiment": "urgent",
-            "layer": "pattern_match",
-        }
-
-    if any(p in text for p in COMPLAINT_PATTERNS):
-        return {
-            "matched": True,
-            "should_escalate": True,
-            "reason": "Learner complaint or dissatisfaction detected.",
-            "category": "complaint",
-            "confidence": 0.95,
-            "customer_sentiment": "frustrated",
-            "layer": "pattern_match",
-        }
-
-    if any(p in text for p in PLACEMENT_GUARANTEE_PATTERNS):
-        return {
-            "matched": True,
-            "should_escalate": True,
-            "reason": "Placement or job guarantee request requires human counselor clarification.",
-            "category": "placement_guarantee",
-            "confidence": 0.96,
-            "customer_sentiment": "neutral",
-            "layer": "pattern_match",
-        }
-
-    if any(p in text for p in PRICING_EXCEPTION_PATTERNS):
-        return {
-            "matched": True,
-            "should_escalate": True,
-            "reason": "Discount, scholarship, EMI, or pricing exception request detected.",
-            "category": "pricing_exception",
-            "confidence": 0.94,
-            "customer_sentiment": "neutral",
-            "layer": "pattern_match",
-        }
-
-    if any(p in text for p in HUMAN_REQUEST_PATTERNS):
-        return {
-            "matched": True,
-            "should_escalate": True,
-            "reason": "Learner requested human admissions support.",
-            "category": "explicit_human_request",
-            "confidence": 0.95,
-            "customer_sentiment": "neutral",
-            "layer": "pattern_match",
-        }
-
-    if any(p in text for p in CORPORATE_PATTERNS):
-        return {
-            "matched": True,
-            "should_escalate": True,
-            "reason": "Corporate or custom training request is outside standard SOP handling.",
-            "category": "corporate_training",
-            "confidence": 0.93,
-            "customer_sentiment": "neutral",
-            "layer": "pattern_match",
-        }
-
-    return {"matched": False, "layer": "pattern_match"}
+# Layer 1: Fast pattern matching (no API call)
+ESCALATION_PATTERNS = {
+    "refund_or_cancellation": [
+        r"refund",
+        r"cancel",
+        r"money back",
+        r"return",
+        r"not happy",
+        r"unsatisfied",
+    ],
+    "payment_issue": [
+        r"payment fail",
+        r"payment error",
+        r"duplicate payment",
+        r"transaction fail",
+        r"billing issue",
+    ],
+    "complaint": [
+        r"complain",
+        r"poor quality",
+        r"trainer quality",
+        r"certificate delay",
+        r"access issue",
+        r"recording missing",
+        r"bad experience",
+    ],
+    "placement_guarantee": [
+        r"guaranteed job",
+        r"guarantee.*job",
+        r"job placement guarantee",
+        r"guaranteed interview",
+        r"salary promise",
+        r"salary guarantee",
+    ],
+    "pricing_exception": [
+        r"discount",
+        r"scholarship",
+        r"emi",
+        r"installment",
+        r"payment plan",
+        r"cheaper",
+        r"negotiat",
+    ],
+    "explicit_human_request": [
+        r"speak.*counselor",
+        r"speak.*human",
+        r"speak.*manager",
+        r"speak.*trainer",
+        r"call me",
+        r"contact.*human",
+    ],
+    "corporate_training": [
+        r"corporate training",
+        r"custom training",
+        r"enterprise solution",
+        r"bulk order",
+    ],
+}
 
 
-def detect_escalation(message: str, state: ConversationState, sop: str) -> Dict[str, Any]:
-    layer1 = layer1_fast_pattern_match(message)
-    if layer1["matched"]:
-        return layer1
+def detect_sentiment(message: str):
+    """Simple sentiment detection based on keywords"""
+    message_lower = message.lower()
 
+    if re.search(r"angry|furious|hate|horrible|terrible|worst", message_lower):
+        return "angry"
+    elif re.search(r"frustrated|annoyed|upset|disappointed|upset", message_lower):
+        return "frustrated"
+    elif re.search(r"not happy|unhappy|dissatisfied", message_lower):
+        return "frustrated"
+    elif re.search(r"urgent|asap|immediately|help|please", message_lower):
+        return "urgent"
+    elif re.search(r"interested|want|curious|considering|maybe", message_lower):
+        return "interested"
+    elif re.search(r"confused|not sure|unclear|don't know|what's", message_lower):
+        return "confused"
+    else:
+        return "neutral"
+
+
+def layer_1_pattern_matching(message: str):
+    """Layer 1: Fast pattern matching without API call"""
+    message_lower = message.lower()
+
+    for category, patterns in ESCALATION_PATTERNS.items():
+        for pattern in patterns:
+            if re.search(pattern, message_lower):
+                return {
+                    "matched": True,
+                    "should_escalate": True,
+                    "reason": f"Pattern matched: {category.replace('_', ' ')}",
+                    "category": category,
+                    "confidence": 0.95,
+                    "customer_sentiment": detect_sentiment(message),
+                    "layer": "pattern_match"
+                }
+
+    return {
+        "matched": False,
+        "layer": "pattern_match"
+    }
+
+
+def layer_2_llm_assessment(message: str, state, conversation_str: str):
+    """Layer 2: LLM-based sentiment and context analysis"""
     prompt = ESCALATION_ASSESSMENT_PROMPT.format(
-        SOP=sop,
         message=message,
-        conversation=stringify_conversation(state),
+        conversation=conversation_str
     )
+
     result = call_llm_json(prompt, state)
+
+    # Handle system errors
+    if result.get("system_error"):
+        return result
+
     result["layer"] = "llm_assessment"
     return result
+
+
+def detect_escalation(message: str, state, sop: Optional[str] = None):
+    """
+    Two-layer escalation detection:
+    Layer 1: Fast pattern matching (no API call)
+    Layer 2: LLM assessment (only if Layer 1 doesn't match)
+    """
+    # Layer 1: Pattern matching
+    layer1_result = layer_1_pattern_matching(message)
+
+    if layer1_result["matched"]:
+        return layer1_result
+
+    # Layer 2: LLM assessment
+    conversation_str = stringify_conversation(state)
+    layer2_result = layer_2_llm_assessment(message, state, conversation_str)
+
+    return layer2_result

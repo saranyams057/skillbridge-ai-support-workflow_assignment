@@ -1,34 +1,58 @@
-from typing import Any, Dict
+from typing import Optional
 
 from llm_client import call_llm_json
-from prompts import SUMMARY_PROMPT
-from schemas import ConversationState
+from prompts import SUMMARY_PROMPT, SYSTEM_PROMPT
 from utils import stringify_conversation
 
 
-def generate_summary(state: ConversationState, sop: str) -> Dict[str, Any]:
+def generate_summary(state, sop: Optional[str] = None):
+    """
+    Summary stage: Generate structured summary for admissions team.
+    """
+
+    conversation_str = stringify_conversation(state)
+    lead_data_dict = state.lead_data.dict()
+    sop_gaps = state.sop_gaps
+
     prompt = SUMMARY_PROMPT.format(
-        SOP=sop,
-        conversation=stringify_conversation(state),
-        lead_data=state.lead_data.model_dump(),
-        sop_gaps=state.sop_gaps,
-        escalated=state.escalated,
-        escalation_reason=state.escalation_reason,
+        conversation=conversation_str,
+        lead_data=lead_data_dict,
+        sop_gaps=sop_gaps
     )
-    return call_llm_json(prompt, state)
+
+    # Call LLM
+    result = call_llm_json(prompt, state, system_prompt=SYSTEM_PROMPT)
+
+    # Handle system errors
+    if result.get("system_error"):
+        return {
+            "customer_intent": "Error generating summary",
+            "key_details_collected": [],
+            "sop_gaps_identified": sop_gaps,
+            "recommended_next_action": "Manual review required"
+        }
+
+    return result
 
 
-def format_summary(summary: Dict[str, Any]) -> str:
-    details = summary.get("key_details_collected", [])
-    gaps = summary.get("sop_gaps_identified", [])
+def format_summary(summary: dict):
+    """Format summary for display"""
+    formatted = []
 
-    details_text = "\n".join([f"- {item}" for item in details]) if details else "- None"
-    gaps_text = "\n".join([f"- {item}" for item in gaps]) if gaps else "- None"
+    if summary.get("customer_intent"):
+        formatted.append(f"**Customer Intent**: {summary['customer_intent']}")
 
-    return (
-        "Here is the conversation summary:\n\n"
-        f"Customer Intent: {summary.get('customer_intent', 'Not identified')}\n\n"
-        f"Key Details Collected:\n{details_text}\n\n"
-        f"SOP Gaps Identified:\n{gaps_text}\n\n"
-        f"Recommended Next Action: {summary.get('recommended_next_action', 'Admissions team follow-up recommended')}"
-    )
+    if summary.get("key_details_collected"):
+        formatted.append("**Key Details Collected**:")
+        for detail in summary["key_details_collected"]:
+            formatted.append(f"• {detail}")
+
+    if summary.get("sop_gaps_identified"):
+        formatted.append("**SOP Gaps Identified**:")
+        for gap in summary["sop_gaps_identified"]:
+            formatted.append(f"• {gap}")
+
+    if summary.get("recommended_next_action"):
+        formatted.append(f"**Recommended Next Action**: {summary['recommended_next_action']}")
+
+    return "\n".join(formatted)
